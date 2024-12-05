@@ -1,0 +1,5 @@
+.home-page .title-home-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+}

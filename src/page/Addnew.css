@@ -1,0 +1,9 @@
+.addnew-user-page {
+  padding: 0 20%;
+}
+.addnew-user-page > h3 {
+  text-align: center;
+}
+.addnew-user-page > button {
+   justify-content: center;
+} 

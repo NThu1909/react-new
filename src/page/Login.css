@@ -1,0 +1,9 @@
+.login-page {
+  padding: 5% 30% 0 30%;
+}
+.login-page > h3 {
+  text-align: center;
+}
+.btn-submit {
+  text-align: center;
+}
