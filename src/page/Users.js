@@ -1,130 +1,148 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Button from "react-bootstrap/Button";
-import "./Users.css";
+import Container from "react-bootstrap/Container";
+import Modal from "react-bootstrap/Modal";
+import Row from "react-bootstrap/Row";
+import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
+import { doFetch } from "../service/FetchService";
+import "./Users.css";
+import { Col } from "react-bootstrap";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  // const [alert, setAlert] = useState(false);
+  const [userId, setUserId] = useState(-1);
   const fetchUsers = () => {
-    axios
-      .get("http://localhost:8080/student")
-      .then((res) => setUsers(res.data.data))
-      .catch((error) => console.error(error))
-      .finally((done) => done);
+    doFetch("admin/user", "GET", undefined, true).then((res) =>
+      setUsers(res.data.listUser)
+    );
+    // axios
+    //   .get(`${API_URL}/admin/user`, {
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   })
+    //   .then((res) => setUsers(res.data.listUser))
+    //   .catch((error) => console.error(error))
+    //   .finally((done) => done);
   };
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const deleteUserById = (id) => {
-    axios
-      .delete(`http://localhost:8080/student/${id}`)
-      .then((res) => {
-        console.log(res);
-        fetchUsers();
-      })
-      .catch((error) => console.error(error))
-      .finally((done) => done);
+    doFetch(`admin/user/${id}`, "DELETE", undefined, true).then((res) =>
+      fetchUsers()
+    );
+    // axios
+    //   .delete(`${API_URL}/admin/user/${id}`, {
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   })
+    //   .then((res) => {
+    //     console.log(res);
+    //     fetchUsers();
+    //   })
+    //   .catch((error) => console.error(error))
+    //   .finally((done) => done);
   };
-  return (
-    <div className="table-users ">
-      <h2>List Users</h2>
-      <div className="uplist d-flex justify-content-between mb-2">
-        <h3>{`Total: ${users.length}`} </h3>
-        <Link to={`/update/-1`}>
-          <Button variant="success">Add new</Button>
-        </Link>
-      </div>
-      <div className="table-user-block">
-        <table className="table">
-          <thead className="table-success">
-            <tr>
-              <th scope="col">No</th>
-              <th scope="col">Name</th>
-              <th scope="col">Day of Birth</th>
-              <th scope="col">Phone</th>
-              <th scope="col">Email</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={`user--${user.id}`}>
-                <td>{index + 1}</td>
-                <td>{user.name}</td>
-                <td>{user.dob}</td>
-                <td>{user.phoneNumber}</td>
-                <td>{user.email}</td>
-                <td className="btn-action d-flex gap-2">
-                  <Link to={`/update/${user.id}`}>
-                    <Button variant="outline-warning">Edit</Button>
-                  </Link>
 
-                  <Button
-                    variant="outline-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal"
-                  >
-                    Delete
-                  </Button>
-                  {/* Alert */}
-                  <div
-                    className="modal fade"
-                    id="exampleModal"
-                    tabIndex="-1"
-                    aria-labelledby="exampleModalLabel"
-                    aria-hidden="true"
-                  >
-                    <div className="modal-dialog">
-                      <div className="modal-content">
-                        <div className="modal-header">
-                          <h1
-                            className="modal-title fs-5"
-                            id="exampleModalLabel"
-                          >
+  return (
+    <Container>
+      <Row>
+        <Row className="text-center">
+          <h3>List Users</h3>
+        </Row>
+        <Row className="">
+          <Col className="col-lef">
+            <h3 className="">{`Total: ${users.length}`} </h3>
+          </Col>
+          <Col className="col-rig">
+            <Link to={`/update/-1`}>
+              <Button variant="success">Add new</Button>
+            </Link>
+          </Col>
+        </Row>
+        <Row className="table-user-block">
+          <Table>
+            <thead className="table-success">
+              <tr>
+                <th>No</th>
+                <th>UserName</th>
+                <th>Full Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user, index) => (
+                <tr key={`user--${user.id}`}>
+                  <td>{index + 1}</td>
+                  <td>{user.username}</td>
+                  <td>{user.fullName}</td>
+                  <td>{user.age}</td>
+                  <td>{user.email}</td>
+                  <td className="btn-action d-flex gap-2">
+                    <Button disabled={user.id === 1} variant="outline-warning">
+                      <Link className="btn-update" to={`/update/${user.id}`}>
+                        Edit
+                      </Link>
+                    </Button>
+
+                    <Button
+                      onClick={() => setUserId(user.id)}
+                      disabled={user.id === 1}
+                      variant="outline-danger"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                    >
+                      Delete
+                    </Button>
+                    {/* Alert */}
+                    <div
+                      className="modal fade"
+                      id="exampleModal"
+                      tabIndex="-1"
+                      aria-labelledby="exampleModalLabel"
+                      aria-hidden="true"
+                    >
+                      <Modal.Dialog>
+                        <Modal.Header>
+                          <Modal.Title className="fs-5" id="exampleModalLabel">
                             Notification
-                          </h1>
-                          <button
-                            type="button"
+                          </Modal.Title>
+                          <Button
                             className="btn-close"
                             data-bs-dismiss="modal"
                             aria-label="Close"
-                          ></button>
-                        </div>
-                        <div className="modal-body">
-                          Are you sure to delete this ?
-                        </div>
-                        <div className="modal-footer">
-                          <button
-                            type="button"
+                          ></Button>
+                        </Modal.Header>
+                        <Modal.Body>Are you sure to delete this ?</Modal.Body>
+                        <Modal.Footer>
+                          <Button
                             className="btn btn-secondary"
                             data-bs-dismiss="modal"
                           >
                             No
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => {
-                              deleteUserById(user.id);
+                              deleteUserById(userId);
                             }}
-                            type="button"
-                            className="btn btn-primary"
+                            className="btn-primary"
                             data-bs-dismiss="modal"
                           >
                             Yes
-                          </button>
-                        </div>
-                      </div>
+                          </Button>
+                        </Modal.Footer>
+                      </Modal.Dialog>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Row>
+      </Row>
+    </Container>
   );
 };
 

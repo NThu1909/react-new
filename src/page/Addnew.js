@@ -2,27 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./Addnew.css";
 import axios from "axios";
+import { API_URL } from "../components/Constant/Constant";
 
 const Addnew = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
-    name: "",
-    dob: "",
-    phoneNumber: "",
+    username: "",
+    fullName: "",
+    age: "",
     email: "",
-    code: "",
   });
 
   const postUser = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8080/student", {
-        name: user.name,
-        dob: user.dob,
-        phoneNumber: user.phoneNumber,
+      .post(`${API_URL}/admin/user`, {
+        username: user.username,
+        fullName: user.fullName,
+        age: user.age,
         email: user.email,
-        code: user.code,
       })
       .then((res) => {
         navigate("/users");
@@ -39,41 +38,41 @@ const Addnew = () => {
       <h3 className="mt-4">Add New User</h3>
       <form onSubmit={postUser}>
         <div class="mb-3">
-          <label for="name" class="form-label">
-            Name
+          <label for="username" class="form-label">
+            UserName
           </label>
 
           <input
             type="text"
-            id="name"
+            id="username"
             class="form-control"
-            value={user.name}
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
+            value={user.username}
+            onChange={(e) => setUser({ ...user, username: e.target.value })}
+          />
+        </div>
+        <div class="mb-3">
+          <label for="fullName" class="form-label">
+            Full Name
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="fullName"
+            value={user.fullName}
+            onChange={(e) => setUser({ ...user, fullName: e.target.value })}
           />
         </div>
         <div class="mb-3">
           <label for="dob" class="form-label">
-            Day of birth
-          </label>
-          <input
-            type="text"
-            class="form-control"
-            id="dob"
-            value={user.dob}
-            onChange={(e) => setUser({ ...user, dob: e.target.value })}
-          />
-        </div>
-        <div class="mb-3">
-          <label for="phone" class="form-label">
-            Phone Number
+            Date of Birth
           </label>
 
           <input
-            type="tel"
-            id="phone"
+            type="date"
+            id="dob"
             class="form-control"
-            value={user.phoneNumber}
-            onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
+            value={user.dob}
+            onChange={(e) => setUser({ ...user, dob: e.target.value })}
           />
         </div>
         <div class="mb-3">
@@ -88,18 +87,7 @@ const Addnew = () => {
             onChange={(e) => setUser({ ...user, email: e.target.value })}
           />
         </div>
-        <div class="mb-3">
-          <label for="code" class="form-label">
-            Code
-          </label>
-          <input
-            type="code"
-            id="code"
-            class="form-control"
-            value={user.code}
-            onChange={(e) => setUser({ ...user, code: e.target.value })}
-          />
-        </div>
+
         <button type="submit" class="btn btn-primary">
           Submit
         </button>

@@ -58,9 +58,15 @@
 .btn-action > button {
   margin-right: 10px;
 } */
-.table-users {
-  padding: 0 20%;
+.list-user-title {
+  width: 100%;
 }
-.table-users > h2 {
-  text-align: center;
+.btn-update {
+  text-decoration: none;
+}
+.col-lef {
+  align-items: start;
+}
+.col-rig {
+  align-items: end;
 }

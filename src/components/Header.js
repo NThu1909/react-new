@@ -8,20 +8,25 @@ import Addnew from "../page/Addnew";
 import Update from "../page/Update";
 import Login from "../page/Login";
 import { Alert } from "bootstrap";
+import Container from "react-bootstrap/Container";
+import { Navbar } from "react-bootstrap";
+import Image from "react-bootstrap/Image";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 const Header = () => {
+  const [token, saveToken] = useLocalStorage("token", null);
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-primary">
-        <div className="container">
+      <Navbar variant="tabs" bg="primary">
+        <Container>
           <div className="header-left d-flex gap-4">
             <div className="menu-logo">
-              <img src="https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-beauty-logo-design-png-image_6568470.png" />
+              <Image src="https://png.pngtree.com/png-vector/20230120/ourmid/pngtree-beauty-logo-design-png-image_6568470.png" />
             </div>
             <Link to="/" className="navbar-brand text-white">
               Home
             </Link>
-            <Link to="/users" className="navbar-brand text-white ">
+            <Link to="/users" className="navbar-brand text-white">
               Users
             </Link>
             <Link to="/about" className="navbar-brand text-white" href="#">
@@ -29,12 +34,22 @@ const Header = () => {
             </Link>
           </div>
           <div className="header-right">
-            <Link to="/login" className="navbar-brand text-white">
-              Login
-            </Link>
+            {token ? (
+              <Link
+                to="/"
+                className="navbar-brand text-white"
+                onClick={() => saveToken(null)}
+              >
+                Logout
+              </Link>
+            ) : (
+              <Link to="/login" className="navbar-brand text-white">
+                Login
+              </Link>
+            )}
           </div>
-        </div>
-      </nav>
+        </Container>
+      </Navbar>
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/users" element={<Users />}></Route>

@@ -2,136 +2,167 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import "./Addnew.css";
 import axios from "axios";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { API_URL } from "../components/Constant/Constant";
+import { doFetch } from "../service/FetchService";
 
 const Update = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    name: "",
-    dob: "",
-    phoneNumber: "",
+    username: "",
+    fullName: "",
+    age: "",
     email: "",
-    code: "",
+    password: "",
   });
-  const [userId, setUserId] = useState(null);
   let params = useParams();
-
-  const getUserById = (e) => {
-    axios
-      .get(`http://localhost:8080/student/${params.id}`)
-      .then((res) => {
-        setUser(res.data.data);
-        setUserId(res.id);
-      })
-      .then(() => {
-        if (userId === -1) {
-          postUser();
-        } else {
-          handleSubmit();
-        }
-      });
-    // .then((res) => {
-    //   setUser(res.data.data);
-    //   setUserId(res.id);
-    // })
-    // .catch((err) => {
-    //   console.error(err);
-    // })
-    // .finally(() => console.log("success"));
+  const userId = params.id;
+  const isAddNew = userId === "-1";
+  const token = localStorage.getItem("token");
+  const body = {
+    username: user.username,
+    fullName: user.fullName,
+    age: user.age,
+    email: user.email,
+    password: user.password,
   };
-  useEffect(() => {
-    getUserById();
-  }, []);
-  const postUser = (e) => {
-    e.preventDefault();
-    axios
-      .post("http://localhost:8080/student", {
-        name: user.name,
-        dob: user.dob,
-        phoneNumber: user.phoneNumber,
-        email: user.email,
-        code: user.code,
-      })
-      .then((res) => {
-        navigate("/users");
-      })
-      .catch((error) => console.error(error))
-      .finally((done) => done);
+  console.log(typeof userId);
+  const getUserById = () => {
+    doFetch(`admin/user/${userId}`, "GET", undefined, true).then((res) =>
+      setUser(res.data.objUser)
+    );
+    // axios
+    //   .get(`${API_URL}/admin/user/${userId}`, {
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   })
+
+    //   .then((res) => {
+    //     setUser(res.data.objUser);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   })
+    //   .finally(() => console.log("success"));
+  };
+
+  const postUser = () => {
+    
+    doFetch("admin/user", "POST", body, true).then((res) => navigate("/users"));
+    // axios
+    //   .post(
+    //     `${API_URL}/admin/user`,
+    //     {
+    //       username: user.username,
+    //       fullName: user.fullName,
+    //       age: user.age,
+    //       email: user.email,
+    //       password: user.password,
+    //     },
+    //     { headers: { Authorization: `Bearer ${token}` } }
+    //   )
+    //   .then((res) => {
+    //     navigate("/users");
+    //   })
+    //   .catch((error) => console.error(error))
+    //   .finally((done) => done);
+  };
+
+  const putUser = () => {
+    doFetch(`admin/user/${userId}`, "PUT", body, true).then((res) =>
+      navigate("/users")
+    );
+    // axios
+    //   .put(
+    //     `${API_URL}/admin/user/${userId}`,
+    //     {
+    //       username: user.username,
+    //       fullName: user.fullName,
+    //       age: user.age,
+    //       email: user.email,
+    //       password: user.password,
+    //     },
+    //     { headers: { Authorization: `Bearer ${token}` } }
+    //   )
+    //   .then((res) => {
+    //     navigate("/users");
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   })
+    //   .finally(() => console.log("success"));
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios
-      .put(`http://localhost:8080/student/${params.id}`, {
-        name: user.name,
-        dob: user.dob,
-        phoneNumber: user.phoneNumber,
-        email: user.email,
-      })
-      .then((res) => {
-        navigate("/users");
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => console.log("success"));
+    if (isAddNew) {
+      postUser();
+    } else {
+      putUser();
+    }
   };
+
+  useEffect(() => {
+    if (!isAddNew) {
+      getUserById();
+    }
+  }, []);
   return (
     <div className="addnew-user-page">
-      <h3>Update user</h3>
-      <form onSubmit={getUserById} key={`update--${user.id}`}>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">
-            Name
-          </label>
+      <h3>{`${isAddNew ? "Add new" : "Update"} user`}</h3>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="username">User Name</Form.Label>
 
-          <input
-            type="text"
-            id="name"
-            className="form-control"
-            value={user?.name}
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
+          <Form.Control
+            disabled={!isAddNew}
+            id="username"
+            value={user?.username}
+            onChange={(e) => setUser({ ...user, username: e.target.value })}
           />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="dob" className="form-label">
-            Day of birth
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="dob"
-            value={user?.dob}
-            onChange={(e) => setUser({ ...user, dob: e.target.value })}
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="password">Password</Form.Label>
+          <Form.Control
+            type="password"
+            id="password"
+            value={user?.password}
+            onChange={(e) => setUser({ ...user, password: e.target.value })}
           />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="phone" className="form-label">
-            Phone Number
-          </label>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="fullName">Full Name</Form.Label>
+          <Form.Control
+            id="fullName"
+            value={user?.fullName}
+            onChange={(e) => setUser({ ...user, fullName: e.target.value })}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="age">Age</Form.Label>
 
-          <input
-            type="tel"
-            id="phone"
-            className="form-control"
-            value={user?.phoneNumber}
-            onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
+          <Form.Control
+            type="number"
+            id="age"
+            value={user?.age}
+            onChange={(e) => setUser({ ...user, age: e.target.value })}
           />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Email address
-          </label>
-          <input
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="email">Email address</Form.Label>
+          <Form.Control
             type="email"
             id="email"
-            className="form-control"
             value={user?.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
           />
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Submit
-        </button>
-      </form>
+        </Form.Group>
+
+        <Form.Group className="submit-btn d-flex justify-content-center">
+          <Button type="submit" variant="primary">
+            Submit
+          </Button>
+        </Form.Group>
+      </Form>
     </div>
   );
 };

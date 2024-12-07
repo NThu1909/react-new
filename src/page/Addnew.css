@@ -5,5 +5,8 @@
   text-align: center;
 }
 .addnew-user-page > button {
-   justify-content: center;
-} 
+  justify-content: center;
+}
+.submit-btn {
+  width: 100%;
+}
