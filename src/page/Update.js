@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { API_URL } from "../components/Constant/Constant";
 import { doFetch } from "../service/FetchService";
+import { jwtDecode } from "jwt-decode";
 
 const Update = () => {
   const navigate = useNavigate();
@@ -15,18 +16,22 @@ const Update = () => {
     age: "",
     email: "",
     password: "",
+    roleIds: "",
   });
+
+  console.log(user);
   let params = useParams();
   const userId = params.id;
   const isAddNew = userId === "-1";
   const token = localStorage.getItem("token");
-  const body = {
-    username: user.username,
-    fullName: user.fullName,
-    age: user.age,
-    email: user.email,
-    password: user.password,
-  };
+  const getJwt = jwtDecode(token);
+  console.log(getJwt);
+  const showOffUsers = () => {
+    if (getJwt.roles === "ROLE_ADMIN"){
+      
+    }
+  }
+  const body = { ...user };
   console.log(typeof userId);
   const getUserById = () => {
     doFetch(`admin/user/${userId}`, "GET", undefined, true).then((res) =>
@@ -47,7 +52,6 @@ const Update = () => {
   };
 
   const postUser = () => {
-    
     doFetch("admin/user", "POST", body, true).then((res) => navigate("/users"));
     // axios
     //   .post(
@@ -106,6 +110,22 @@ const Update = () => {
       getUserById();
     }
   }, []);
+
+  const checkboxOptions = [
+    { id: 1, text: "ADMIN" },
+    { id: 2, text: "STUDENT" },
+    { id: 3, text: "TEACHER" },
+  ];
+
+  const handleCheckRoles = (roleId) => {
+    const newRoles = user.roleIds;
+    if (newRoles.includes(roleId)) {
+      newRoles.splice(newRoles.indexOf(roleId), 1);
+    } else {
+      newRoles.push(roleId);
+    }
+    setUser({ ...user, roleIds: [...newRoles] });
+  };
   return (
     <div className="addnew-user-page">
       <h3>{`${isAddNew ? "Add new" : "Update"} user`}</h3>
@@ -156,7 +176,21 @@ const Update = () => {
             onChange={(e) => setUser({ ...user, email: e.target.value })}
           />
         </Form.Group>
-
+        <Form.Group>
+          <div className="group-choose">
+            {checkboxOptions.map((option) => (
+              <div className="check-box-group">
+                <Form.Label>{option.text}</Form.Label>
+                <Form.Check
+                  checked={user.roleIds.includes(option.id)}
+                  type="checkbox"
+                  value={option.id}
+                  onChange={(e) => handleCheckRoles(Number(e.target.value))}
+                />
+              </div>
+            ))}
+          </div>
+        </Form.Group>
         <Form.Group className="submit-btn d-flex justify-content-center">
           <Button type="submit" variant="primary">
             Submit

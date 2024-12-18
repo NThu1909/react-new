@@ -22,7 +22,9 @@ const Login = () => {
       const tokenRes = res.data.authResponse.accessToken;
       saveToken(tokenRes);
       navigate("/");
+      console.log(tokenRes);
     });
+
     // axios
     //   .post(`${API_URL}/auth/login`, {
     //     username: username,

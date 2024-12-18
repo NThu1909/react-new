@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, Routes, Route } from "react-router-dom";
 import Home from "../page/Home";
 import About from "../page/About";
@@ -12,9 +12,32 @@ import Container from "react-bootstrap/Container";
 import { Navbar } from "react-bootstrap";
 import Image from "react-bootstrap/Image";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import { jwtDecode } from "jwt-decode";
 
 const Header = () => {
   const [token, saveToken] = useLocalStorage("token", null);
+  const [tokenDecode, setTokenDecode] = useState("");
+
+  const decodeToken = () => {
+    setTokenDecode(jwtDecode(token));
+  };
+  console.log(tokenDecode);
+  // const tokenDecode = jwtDecode(token);
+  // console.log(typeof tokenDecode);
+
+  const exp = tokenDecode.exp;
+  console.log("exp", tokenDecode.exp);
+
+  const expirationDate = new Date(exp);
+  console.log("Expiration Date:", expirationDate.toString());
+
+  const expiryDate = expirationDate < new Date() ? "Expiry date" : "Expired";
+  console.log(expiryDate);
+
+  const showUsers = tokenDecode.roles?.includes("ROLE_ADMIN") || false;
+  console.log(tokenDecode.roles);
+  console.log("Show Users:", showUsers);
+
   return (
     <>
       <Navbar variant="tabs" bg="primary">
@@ -26,9 +49,12 @@ const Header = () => {
             <Link to="/" className="navbar-brand text-white">
               Home
             </Link>
-            <Link to="/users" className="navbar-brand text-white">
-              Users
-            </Link>
+            {showUsers && (
+              <Link to="/users" className="navbar-brand text-white">
+                Users
+              </Link>
+            )}
+
             <Link to="/about" className="navbar-brand text-white" href="#">
               About
             </Link>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
@@ -8,10 +9,15 @@ import { Link } from "react-router-dom";
 import { doFetch } from "../service/FetchService";
 import "./Users.css";
 import { Col } from "react-bootstrap";
+// import { jwtDecode } from "jwt-decode";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState(-1);
+ 
+  const token = localStorage.getItem("token");
+  console.log(token);
+  
   const fetchUsers = () => {
     doFetch("admin/user", "GET", undefined, true).then((res) =>
       setUsers(res.data.listUser)
@@ -25,7 +31,7 @@ const Users = () => {
     //   .finally((done) => done);
   };
   useEffect(() => {
-    fetchUsers();
+    fetchUsers()
   }, []);
 
   const deleteUserById = (id) => {

@@ -10,3 +10,11 @@
 .submit-btn {
   width: 100%;
 }
+.check-box-group {
+  display: flex;
+  gap: 20px;
+}
+.group-choose {
+  display: flex;
+  gap: 20px;
+}
